@@ -105,5 +105,16 @@ namespace ThiefVR_bhaptics
             }
         }
 
+        [HarmonyPatch(typeof(ThiefVisionToggle), "ThiefVisionActivate", new Type[] { })]
+        public class bhaptics_ThiefVisionActivate
+        {
+            [HarmonyPostfix]
+            public static void Postfix(ThiefVisionToggle __instance)
+            {
+                tactsuitVr.PlaybackHaptics("ThiefVision");
+            }
+        }
+
+
     }
 }
