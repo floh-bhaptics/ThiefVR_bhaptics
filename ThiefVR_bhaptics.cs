@@ -2,6 +2,8 @@
 using HarmonyLib;
 using MyBhapticsTactsuit;
 using Il2CppMazeTheory.Shadow;
+using Il2CppHurricaneVR.Framework.Core;
+using Il2CppHurricaneVR.Framework.Core.Grabbers;
 
 [assembly: MelonInfo(typeof(ThiefVR_bhaptics.ThiefVR_bhaptics), "ThiefVR_bhaptics", "1.0.0", "Florian Fahrenberger")]
 [assembly: MelonGame("MazeTheory", "Shadow")]
@@ -19,7 +21,7 @@ namespace ThiefVR_bhaptics
             tactsuitVr.PlaybackHaptics("HeartBeat");
         }
 
-        
+        /*
         [HarmonyPatch(typeof(PlayerEquipmentController), "ToggleBlackjack", new Type[] { typeof(bool) })]
         public class bhaptics_Blackjack
         {
@@ -29,17 +31,28 @@ namespace ThiefVR_bhaptics
                 tactsuitVr.PlaybackHaptics("HipHolster");
             }
         }
+        */
 
-        [HarmonyPatch(typeof(PlayerEquipmentController), "ToogleBow", new Type[] { typeof(bool) })]
+        [HarmonyPatch(typeof(BlackjackGrabbedEvent), "BlackjackGrabbed", new Type[] { typeof(HVRGrabberBase), typeof(HVRGrabbable) })]
+        public class bhaptics_BlackjackGrabbed
+        {
+            [HarmonyPostfix]
+            public static void Postfix(BlackjackGrabbedEvent __instance)
+            {
+                tactsuitVr.PlaybackHaptics("HipHolster");
+            }
+        }
+
+        [HarmonyPatch(typeof(MTBowController), "OnBowGrabbed", new Type[] { typeof(HVRHandGrabber), typeof(HVRGrabbable) })]
         public class bhaptics_Bow
         {
             [HarmonyPostfix]
-            public static void Postfix(PlayerEquipmentController __instance, bool isActive)
+            public static void Postfix(MTBowController __instance)
             {
                 tactsuitVr.PlaybackHaptics("ShoulderHolster");
             }
         }
-
+        
         [HarmonyPatch(typeof(PlayerHealthManager), "TakeDamage", new Type[] { typeof(PlayerHealthManager.PlayerDamageType), typeof(float) })]
         public class bhaptics_Damage
         {
@@ -107,11 +120,11 @@ namespace ThiefVR_bhaptics
             }
         }
 
-        [HarmonyPatch(typeof(LootCollectionManager), "Collect")]
+        [HarmonyPatch(typeof(LootManager), "CollectLoot", new Type[] { typeof(LootDatabase.LootData)})]
         public class bhaptics_CollectLoot
         {
             [HarmonyPostfix]
-            public static void Postfix()
+            public static void Postfix(LootManager __instance)
             {
                 tactsuitVr.PlaybackHaptics("CollectLoot");
             }

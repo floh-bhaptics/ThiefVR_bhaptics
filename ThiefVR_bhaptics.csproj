@@ -19,6 +19,10 @@
       <HintPath>Bhaptics.Tact.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Il2CppHurricaneVR.Framework">
+      <HintPath>G:\SteamLibrary\steamapps\common\Project Shadow\MelonLoader\Il2CppAssemblies\Il2CppHurricaneVR.Framework.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="MelonLoader">
       <HintPath>G:\SteamLibrary\steamapps\common\Project Shadow\MelonLoader\net6\MelonLoader.dll</HintPath>
       <Private>False</Private>
