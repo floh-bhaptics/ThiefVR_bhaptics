@@ -48,7 +48,19 @@ namespace ThiefVR_bhaptics
             {
                 if (__instance._healthData.currentHealth < 0.25f * __instance._healthData.maxHealth) tactsuitVr.StartHeartBeat();
                 else tactsuitVr.StopHeartBeat();
-                tactsuitVr.PlaybackHaptics("Impact");
+                if (type == PlayerHealthManager.PlayerDamageType.Fall) tactsuitVr.PlaybackHaptics("FallDamage");
+                else tactsuitVr.PlaybackHaptics("Impact");
+            }
+        }
+
+        [HarmonyPatch(typeof(FallDamageController), "HandleFallSfx", new Type[] { typeof(float), typeof(float) })]
+        public class bhaptics_Fall
+        {
+            [HarmonyPostfix]
+            public static void Postfix(FallDamageController __instance, float distance, float normalisedDistance)
+            {
+                if (distance < __instance.minFallDamageDistance) tactsuitVr.PlaybackHaptics("FallLight");
+                else tactsuitVr.PlaybackHaptics("FallDamage");
             }
         }
 
@@ -115,6 +127,15 @@ namespace ThiefVR_bhaptics
             }
         }
 
+        [HarmonyPatch(typeof(PlayStyleTracker), "PlayerDetected", new Type[] { })]
+        public class bhaptics_PlayerDetected
+        {
+            [HarmonyPostfix]
+            public static void Postfix(PlayStyleTracker __instance)
+            {
+                tactsuitVr.PlaybackHaptics("NeckTingle");
+            }
+        }
 
     }
 }
