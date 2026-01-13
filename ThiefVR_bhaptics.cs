@@ -4,6 +4,7 @@ using MyBhapticsTactsuit;
 using Il2CppMazeTheory.Shadow;
 using Il2CppHurricaneVR.Framework.Core;
 using Il2CppHurricaneVR.Framework.Core.Grabbers;
+using Il2CppMazeTheory.Shadow.Content.Scripts.Audio.Character;
 
 [assembly: MelonInfo(typeof(ThiefVR_bhaptics.ThiefVR_bhaptics), "ThiefVR_bhaptics", "1.0.0", "Florian Fahrenberger")]
 [assembly: MelonGame("MazeTheory", "Shadow")]
@@ -21,25 +22,14 @@ namespace ThiefVR_bhaptics
             tactsuitVr.PlaybackHaptics("HeartBeat");
         }
 
-        /*
-        [HarmonyPatch(typeof(PlayerEquipmentController), "ToggleBlackjack", new Type[] { typeof(bool) })]
-        public class bhaptics_Blackjack
+        [HarmonyPatch(typeof(Blackjack), "HandGrabbed", new Type[] { typeof(HVRHandGrabber), typeof(HVRGrabbable) })]
+        public class bhaptics_BlackjackGrabbed2
         {
             [HarmonyPostfix]
-            public static void Postfix(PlayerEquipmentController __instance, bool isActive)
+            public static void Postfix(BlackjackGrabbedEvent __instance, HVRHandGrabber grabber)
             {
-                tactsuitVr.PlaybackHaptics("HipHolster");
-            }
-        }
-        */
-
-        [HarmonyPatch(typeof(BlackjackGrabbedEvent), "BlackjackGrabbed", new Type[] { typeof(HVRGrabberBase), typeof(HVRGrabbable) })]
-        public class bhaptics_BlackjackGrabbed
-        {
-            [HarmonyPostfix]
-            public static void Postfix(BlackjackGrabbedEvent __instance, HVRGrabberBase arg0)
-            {
-                tactsuitVr.PlaybackHaptics("HipHolster");
+                if (grabber.IsLeftHand) tactsuitVr.PlaybackHaptics("HipHolster_L");
+                else tactsuitVr.PlaybackHaptics("HipHolster_R");
             }
         }
 
@@ -60,21 +50,19 @@ namespace ThiefVR_bhaptics
             [HarmonyPostfix]
             public static void Postfix(PlayerHealthManager __instance, PlayerHealthManager.PlayerDamageType type, float amount)
             {
-                if (__instance._healthData.currentHealth < 0.25f * __instance._healthData.maxHealth) tactsuitVr.StartHeartBeat();
-                else tactsuitVr.StopHeartBeat();
+                if (__instance._healthData.currentHealth < 0.25f * __instance._healthData.maxHealth) tactsuitVr.PlaybackHaptics("HeartBeat");
                 if (type == PlayerHealthManager.PlayerDamageType.Fall) tactsuitVr.PlaybackHaptics("FallDamage");
                 else tactsuitVr.PlaybackHaptics("Impact");
             }
         }
 
-        [HarmonyPatch(typeof(FallDamageController), "HandleFallSfx", new Type[] { typeof(float), typeof(float) })]
-        public class bhaptics_Fall
+        [HarmonyPatch(typeof(PlayerMovementFx), "OnLanded", new Type[] { typeof(float), typeof(float) })]
+        public class bhaptics_FallMovement
         {
             [HarmonyPostfix]
-            public static void Postfix(FallDamageController __instance, float distance, float normalisedDistance)
+            public static void Postfix(PlayerMovementFx __instance, float distance, float realFallDistance)
             {
-                if (distance < 0.3f) return;
-                if (distance < __instance.minFallDamageDistance) tactsuitVr.PlaybackHaptics("FallLight");
+                if (realFallDistance < 4.0f) tactsuitVr.PlaybackHaptics("FallLight");
                 else tactsuitVr.PlaybackHaptics("FallDamage");
             }
         }
@@ -122,16 +110,6 @@ namespace ThiefVR_bhaptics
             }
         }
 
-        [HarmonyPatch(typeof(LootManager), "CollectLoot", new Type[] { typeof(LootDatabase.LootData)})]
-        public class bhaptics_CollectLoot
-        {
-            [HarmonyPostfix]
-            public static void Postfix(LootManager __instance)
-            {
-                tactsuitVr.PlaybackHaptics("CollectLoot");
-            }
-        }
-
         [HarmonyPatch(typeof(ThiefVisionToggle), "ThiefVisionActivate", new Type[] { })]
         public class bhaptics_ThiefVisionActivate
         {
@@ -142,6 +120,7 @@ namespace ThiefVR_bhaptics
             }
         }
 
+        /*
         [HarmonyPatch(typeof(PlayStyleTracker), "PlayerDetected", new Type[] { })]
         public class bhaptics_PlayerDetected
         {
@@ -149,6 +128,28 @@ namespace ThiefVR_bhaptics
             public static void Postfix(PlayStyleTracker __instance)
             {
                 tactsuitVr.PlaybackHaptics("NeckTingle");
+            }
+        }
+        */
+
+        [HarmonyPatch(typeof(AISenseController), "DetectPlayer")]
+        public class bhaptics_SenseDetectPlayer
+        {
+            [HarmonyPostfix]
+            public static void Postfix(AISenseController __instance)
+            {
+                tactsuitVr.PlaybackHaptics("NeckTingle");
+            }
+        }
+
+
+        [HarmonyPatch(typeof(LootObtainer), "CollectLootAndUpdateText", new Type[] { typeof(LootItem) })]
+        public class bhaptics_CollectLootUpdateText
+        {
+            [HarmonyPostfix]
+            public static void Postfix(LootObtainer __instance)
+            {
+                tactsuitVr.PlaybackHaptics("CollectLoot");
             }
         }
 

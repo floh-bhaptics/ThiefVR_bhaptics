@@ -102,7 +102,7 @@ namespace MyBhapticsTactsuit
             string postfix = "_L";
             if (isRightHand) { postfix = "_R"; }
 
-            string keyVest = "ShootBowVest" + postfix;
+            string keyVest = "ShootBow" + postfix;
 
             BhapticsSDK2.Play(keyVest.ToLower(), intensity, duration, 0f, 0f);
         }
