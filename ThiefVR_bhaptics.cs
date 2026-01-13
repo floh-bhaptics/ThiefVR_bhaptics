@@ -73,6 +73,7 @@ namespace ThiefVR_bhaptics
             [HarmonyPostfix]
             public static void Postfix(FallDamageController __instance, float distance, float normalisedDistance)
             {
+                if (distance < 0.3f) return;
                 if (distance < __instance.minFallDamageDistance) tactsuitVr.PlaybackHaptics("FallLight");
                 else tactsuitVr.PlaybackHaptics("FallDamage");
             }
