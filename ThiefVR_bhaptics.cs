@@ -37,7 +37,7 @@ namespace ThiefVR_bhaptics
         public class bhaptics_BlackjackGrabbed
         {
             [HarmonyPostfix]
-            public static void Postfix(BlackjackGrabbedEvent __instance)
+            public static void Postfix(BlackjackGrabbedEvent __instance, HVRGrabberBase arg0)
             {
                 tactsuitVr.PlaybackHaptics("HipHolster");
             }
@@ -47,9 +47,10 @@ namespace ThiefVR_bhaptics
         public class bhaptics_Bow
         {
             [HarmonyPostfix]
-            public static void Postfix(MTBowController __instance)
+            public static void Postfix(MTBowController __instance, HVRHandGrabber hand)
             {
-                tactsuitVr.PlaybackHaptics("ShoulderHolster");
+                if (hand.IsLeftHand) tactsuitVr.PlaybackHaptics("ShoulderHolster_L");
+                else tactsuitVr.PlaybackHaptics("ShoulderHolster_R");
             }
         }
         
